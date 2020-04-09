@@ -4,7 +4,7 @@ from room import Room
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+                    "North of you, the cave mount beckons"),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
@@ -49,3 +49,39 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+# prompts user upon the game being activated
+# this variable is declared in global scope so playGame() can access it
+cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+
+def playGame():
+    # keeps the game running after the player does something
+    gameIsRunning = True
+
+    while gameIsRunning == True:
+        global cardinalDirection
+
+        # exits playGame() function/logic
+        if cardinalDirection == 'q':
+            return
+        elif cardinalDirection == 'n':
+            print(f"You moved {cardinalDirection}")
+            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+        elif cardinalDirection == 'e':
+            print(f"You moved {cardinalDirection}")
+            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+        elif cardinalDirection == 's':
+            print(f"You moved {cardinalDirection}")
+            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+        elif cardinalDirection == 'w':
+            print(f"You moved {cardinalDirection}")
+            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+        else:
+            print("Please enter a valid movement command")
+            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+
+    # show this message when the game first loads
+    print("Current Room: , Room Description: ")
+
+# game logic triggers everytime the player does something
+playGame()
