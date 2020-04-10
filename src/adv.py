@@ -1,4 +1,5 @@
 from room import Room
+from player import Player
 
 # Declare all the rooms
 
@@ -21,9 +22,10 @@ chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
 
+player = Player('Jaytee', room['outside'])
+
 
 # Link rooms together
-
 room['outside'].n_to = room['foyer']
 room['foyer'].s_to = room['outside']
 room['foyer'].n_to = room['overlook']
@@ -50,38 +52,32 @@ room['treasure'].s_to = room['narrow']
 #
 # If the user enters "q", quit the game.
 
-# prompts user upon the game being activated
-# this variable is declared in global scope so playGame() can access it
-cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+commands = ['n', 'e', 's', 'w', 'q']
+
+def checkPlayerInput(playerInput):
+    # if playerInput is a single value, make sure it's a valid movement
+    if len(playerInput) == 1:
+        # check if the input exists in commands list
+        if playerInput[0] in commands:
+            print("you moved")
+        else:
+            print("Please enter a valid command")
+    else:
+        print("Please enter a valid command")
 
 def playGame():
     # keeps the game running after the player does something
     gameIsRunning = True
 
     while gameIsRunning == True:
-        global cardinalDirection
+        # show the player's current location
+        print(f"\nCurrent location: {player.current_room.name},\n{player.current_room.desc}\n")
 
-        # exits playGame() function/logic
-        if cardinalDirection == 'q':
-            return
-        elif cardinalDirection == 'n':
-            print(f"You moved {cardinalDirection}")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
-        elif cardinalDirection == 'e':
-            print(f"You moved {cardinalDirection}")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
-        elif cardinalDirection == 's':
-            print(f"You moved {cardinalDirection}")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
-        elif cardinalDirection == 'w':
-            print(f"You moved {cardinalDirection}")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
-        else:
-            print("Please enter a valid movement command")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+        # get player input from prompt
+        playerInput = input("What would you like to do? (n, e, s, w, q to quit): ").lower().split(' ')
 
-    # show this message when the game first loads
-    print("Current Room: , Room Description: ")
+        # check for validity of player's input
+        checkPlayerInput(playerInput)
 
 # game logic triggers everytime the player does something
 playGame()
