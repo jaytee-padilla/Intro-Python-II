@@ -5,7 +5,7 @@ from player import Player
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                    "North of you, the cave mount beckons"),
+                    "North of you, the cave mount beckons", ["staff", "shoes"]),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
@@ -54,12 +54,25 @@ room['treasure'].s_to = room['narrow']
 
 commands = ['n', 'e', 's', 'w', 'q']
 
+def handlePlayerMovement(playerInput):
+    if hasattr(player.current_room, f"{playerInput}_to"):
+        # update the current_room that the player is in
+        linkedRoom = getattr(player.current_room, f"{playerInput}_to")
+        player.current_room = linkedRoom
+        player.get("stafffffffffffff")
+
+    else:
+        print("\nCan't travel that direction")
+
 def checkPlayerInput(playerInput):
-    # if playerInput is a single value, make sure it's a valid movement
+    # if playerInput is a single value, it is a movement value, make sure it's a valid movement
     if len(playerInput) == 1:
         # check if the input exists in commands list
         if playerInput[0] in commands:
-            print("you moved")
+            if playerInput[0] == 'q':
+                quit()
+            else:
+                handlePlayerMovement(playerInput[0])
         else:
             print("Please enter a valid command")
     else:
