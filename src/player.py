@@ -6,9 +6,8 @@ class Player:
     self.current_room = current_room
     self.inventory = [] if inventory is None else inventory
 
-  def get(self, item):
-    print(self.current_room.inventory)
-    # print(f"Player inventory: {item}" )
+  # def grab(self, item):
+  #   print(self.current_room.inventory)
 
-  def drop(self, item):
-    print(self.current_room.inventory)
+  # def drop(self, item):
+  #   print(self.current_room.inventory)
