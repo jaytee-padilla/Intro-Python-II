@@ -1,13 +1,14 @@
 from room import Room
+from player import Player
 
 # Declare all the rooms
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                    "North of you, the cave mount beckons"),
+                    "North of you, the cave mount beckons", ['staff']),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
-passages run north and east."""),
+passages run north and east.""", ['torch']),
 
     'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
 into the darkness. Ahead to the north, a light flickers in
@@ -21,9 +22,10 @@ chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
 
+player = Player('Jaytee', room['outside'])
+
 
 # Link rooms together
-
 room['outside'].n_to = room['foyer']
 room['foyer'].s_to = room['outside']
 room['foyer'].n_to = room['overlook']
@@ -50,38 +52,84 @@ room['treasure'].s_to = room['narrow']
 #
 # If the user enters "q", quit the game.
 
-# prompts user upon the game being activated
-# this variable is declared in global scope so playGame() can access it
-cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+commands = ['n', 'e', 's', 'w', 'q', 'grab', 'drop']
+
+def handlePlayerMovement(playerInput):
+    if hasattr(player.current_room, f"{playerInput}_to"):
+        # update the current_room that the player is in
+        linkedRoom = getattr(player.current_room, f"{playerInput}_to")
+        player.current_room = linkedRoom
+
+    else:
+        print("\nCan't travel that direction")
+
+# handles all interactions of items between the player and current room they're in
+def handleItems(playerAction, itemName):
+    if playerAction == 'grab':
+        # check if the item currently exists in the room
+        if itemName in player.current_room.inventory:
+            player.inventory.append(itemName)
+            player.current_room.inventory.remove(itemName)
+            print(f"\nYou picked up: {itemName}")
+        else:
+            print("\nThat item doesn't exist")
+
+    elif playerAction == 'drop':
+        # check if the item currently exists in player's inventory
+        if itemName in player.inventory:
+            player.inventory.remove(itemName)
+            player.current_room.inventory.append(itemName)
+            print(f"\nYou dropped: {itemName}")
+        else:
+            print("\nThat item doesn't exist")
+
+
+def checkPlayerInput(playerInput):
+    # if playerInput is a single value, it is a movement value, make sure it's a valid movement
+    if len(playerInput) == 1:
+        # check if the input exists in commands list
+        if playerInput[0] in commands:
+            if playerInput[0] == 'q':
+                quit()
+            elif playerInput[0] == 'grab' or playerInput[0] == 'drop':
+                print("\nPlease specify the name of the item you want to pick up after a 'grab' or 'drop' command")
+            else:
+                handlePlayerMovement(playerInput[0])
+        else:
+            print("\nPlease enter a valid command")
+
+    # 2 input values means the player is trying to grab or drop an item
+    elif len(playerInput) == 2:
+        # check if the input exists in commands list
+        if playerInput[0] in commands:
+            handleItems(playerInput[0], playerInput[1])
+        else:
+            print("\nPlease enter a valid command")
+
+    else:
+        print("\nPlease enter a valid command")
 
 def playGame():
     # keeps the game running after the player does something
     gameIsRunning = True
 
     while gameIsRunning == True:
-        global cardinalDirection
+        # show the player's current location
+        print(f"\nCurrent location: {player.current_room.name},\n{player.current_room.desc}\n")
 
-        # exits playGame() function/logic
-        if cardinalDirection == 'q':
-            return
-        elif cardinalDirection == 'n':
-            print(f"You moved {cardinalDirection}")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
-        elif cardinalDirection == 'e':
-            print(f"You moved {cardinalDirection}")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
-        elif cardinalDirection == 's':
-            print(f"You moved {cardinalDirection}")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
-        elif cardinalDirection == 'w':
-            print(f"You moved {cardinalDirection}")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
-        else:
-            print("Please enter a valid movement command")
-            cardinalDirection = input("Please enter the direction you'd like to travel (n, e, s, w, q to quit): ")
+        # if the player has anything in their inventory, display their inventory
+        if len(player.inventory) > 0:
+            print(f"Player Inventory: {player.inventory}\n")
 
-    # show this message when the game first loads
-    print("Current Room: , Room Description: ")
+        # if there is an item in the room, display it
+        if(len(player.current_room.inventory) > 0):
+            print(f"This room has stuff you can grab: {player.current_room.inventory}\n")
+
+        # get player input from prompt
+        playerInput = input("What would you like to do? [n/e/s/w/grab/drop/q to quit]: ").lower().split(' ')
+
+        # check for validity of player's input
+        checkPlayerInput(playerInput)
 
 # game logic triggers everytime the player does something
 playGame()
